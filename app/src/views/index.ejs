@@ -1,0 +1,181 @@
+<%- include('layouts/header') %>
+
+<!-- Hero Banner -->
+<section class="hero-section mb-5">
+  <div class="container text-center py-4">
+    <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold mb-3 shadow-sm">
+      <i class="bi bi-mortarboard-fill me-1"></i> Đề Tài 17 - Hệ Thống LMS Docker Hoàn Chỉnh
+    </span>
+    <h1 class="display-4 fw-bold mb-3">Học Tập & Phát Triển Kỹ Năng Trực Tuyến</h1>
+    <p class="lead text-light opacity-90 mx-auto mb-4" style="max-width: 720px;">
+      Nền tảng đào tạo trực tuyến hiện đại với đầy đủ chức năng quản lý bài giảng, video học tập, đăng ký môn học và phân quyền Admin / Học viên.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="/courses" class="btn btn-light btn-lg px-4 fw-semibold text-primary shadow">
+        <i class="bi bi-compass me-2"></i> Khám phá Khóa học
+      </a>
+      <% if (!currentUser) { %>
+        <a href="/auth/register" class="btn btn-outline-light btn-lg px-4">
+          <i class="bi bi-person-plus me-2"></i> Đăng ký tài khoản
+        </a>
+      <% } else if (currentUser.role === 'admin') { %>
+        <a href="/admin/dashboard" class="btn btn-warning btn-lg px-4 text-dark fw-bold">
+          <i class="bi bi-speedometer2 me-2"></i> Vào Quản Trị
+        </a>
+      <% } else { %>
+        <a href="/student/my-courses" class="btn btn-outline-light btn-lg px-4">
+          <i class="bi bi-journal-check me-2"></i> Khóa học của tôi
+        </a>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<div class="container mb-5">
+  <!-- Thống Kê Nhanh -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="card stat-card shadow-sm p-3 h-100 bg-white">
+        <div class="d-flex align-items-center">
+          <div class="rounded-3 bg-primary bg-opacity-10 p-3 text-primary me-3">
+            <i class="bi bi-collection-play-fill fs-2"></i>
+          </div>
+          <div>
+            <h3 class="fw-bold mb-0 text-dark"><%= stats ? stats.course_count : 0 %></h3>
+            <span class="text-muted small">Khóa học chuyên sâu</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card stat-card shadow-sm p-3 h-100 bg-white" style="border-left-color: #10b981;">
+        <div class="d-flex align-items-center">
+          <div class="rounded-3 bg-success bg-opacity-10 p-3 text-success me-3">
+            <i class="bi bi-people-fill fs-2"></i>
+          </div>
+          <div>
+            <h3 class="fw-bold mb-0 text-dark"><%= stats ? stats.student_count : 0 %></h3>
+            <span class="text-muted small">Học viên tham gia</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card stat-card shadow-sm p-3 h-100 bg-white" style="border-left-color: #f59e0b;">
+        <div class="d-flex align-items-center">
+          <div class="rounded-3 bg-warning bg-opacity-10 p-3 text-warning me-3">
+            <i class="bi bi-journal-text fs-2"></i>
+          </div>
+          <div>
+            <h3 class="fw-bold mb-0 text-dark"><%= stats ? stats.lesson_count : 0 %></h3>
+            <span class="text-muted small">Bài học & Video hướng dẫn</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danh Mục Nổi Bật -->
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="fw-bold text-dark mb-0">Chủ Đề Đào Tạo</h3>
+      <a href="/courses" class="text-primary text-decoration-none small fw-semibold">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row g-3">
+      <% categories.forEach(cat => { %>
+        <div class="col-6 col-md-3">
+          <a href="/courses?category=<%= cat.id %>" class="text-decoration-none">
+            <div class="card border-0 shadow-sm p-3 text-center h-100 hover-card bg-white">
+              <i class="bi <%= cat.icon || 'bi-bookmark' %> text-primary fs-1 mb-2"></i>
+              <h6 class="fw-bold text-dark mb-1"><%= cat.name %></h6>
+              <p class="text-muted small mb-0 text-truncate"><%= cat.description || 'Chủ đề chuyên môn' %></p>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Khóa Học Nổi Bật -->
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="fw-bold text-dark mb-1">Khóa Học Mới Nhất</h3>
+        <p class="text-muted small mb-0">Cập nhật liên tục từ các giảng viên chuyên gia</p>
+      </div>
+      <a href="/courses" class="btn btn-outline-primary btn-sm px-3">Xem toàn bộ</a>
+    </div>
+
+    <div class="row g-4">
+      <% if (featuredCourses && featuredCourses.length > 0) { %>
+        <% featuredCourses.forEach(c => { %>
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 course-card shadow-sm bg-white">
+              <div class="position-relative">
+                <img src="<%= c.thumbnail_url %>" class="card-img-top course-thumbnail" alt="<%= c.title %>" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600'">
+                <span class="badge bg-primary position-absolute top-0 end-0 m-2"><%= c.category_name || 'Công nghệ' %></span>
+              </div>
+              <div class="card-body d-flex flex-direction-column flex-column">
+                <div class="d-flex justify-content-between text-muted small mb-2">
+                  <span><i class="bi bi-person me-1"></i><%= c.instructor %></span>
+                  <span class="badge bg-secondary-subtle text-secondary"><%= c.level %></span>
+                </div>
+                <h5 class="card-title fw-bold text-dark mb-2">
+                  <a href="/courses/<%= c.id %>" class="text-dark text-decoration-none"><%= c.title %></a>
+                </h5>
+                <p class="card-text text-muted small flex-grow-1">
+                  <%= c.description.length > 110 ? c.description.substring(0, 110) + '...' : c.description %>
+                </p>
+                <div class="border-top pt-3 mt-2 d-flex justify-content-between align-items-center">
+                  <div class="d-flex gap-2 text-muted small">
+                    <span><i class="bi bi-play-circle me-1 text-primary"></i> <%= c.total_lessons %> bài</span>
+                    <span>•</span>
+                    <span><i class="bi bi-people me-1 text-success"></i> <%= c.total_students %> học viên</span>
+                  </div>
+                  <a href="/courses/<%= c.id %>" class="btn btn-primary btn-sm px-3">
+                    Chi tiết <i class="bi bi-arrow-right ms-1"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12 text-center py-5">
+          <p class="text-muted">Chưa có khóa học nào được đăng tải.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Kiến trúc hệ thống Docker & Giám sát -->
+  <div class="card border-0 bg-dark text-white p-4 rounded-4 shadow">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h4 class="fw-bold mb-2"><i class="bi bi-diagram-3-fill text-info me-2"></i> Kiến Trúc Hệ Thống (Đề 17 LMS Docker)</h4>
+        <p class="text-light opacity-75 small mb-3">
+          Hệ thống được thiết kế theo mô hình microservices đầy đủ: <strong>Nginx Reverse Proxy</strong> (cổng 80) phân luồng, <strong>LMS App Node.js</strong> kết nối <strong>MySQL</strong> + <strong>phpMyAdmin</strong>, hệ thống thu thập giám sát <strong>Prometheus</strong>, logs tập trung <strong>Loki & Promtail</strong> và trực quan hóa trên <strong>Grafana</strong>.
+        </p>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="badge bg-secondary">Docker Compose</span>
+          <span class="badge bg-info text-dark">Nginx</span>
+          <span class="badge bg-success">Node.js App</span>
+          <span class="badge bg-primary">MySQL</span>
+          <span class="badge bg-warning text-dark">Prometheus</span>
+          <span class="badge bg-danger">Grafana</span>
+          <span class="badge bg-light text-dark">Loki / Promtail</span>
+        </div>
+      </div>
+      <div class="col-lg-4 text-center mt-3 mt-lg-0">
+        <a href="http://localhost:3001" target="_blank" class="btn btn-warning fw-bold px-4 py-2 w-100 mb-2">
+          <i class="bi bi-graph-up me-2"></i> Mở Grafana Dashboard
+        </a>
+        <a href="/phpmyadmin/" target="_blank" class="btn btn-outline-light px-4 py-2 w-100">
+          <i class="bi bi-database me-2"></i> Mở phpMyAdmin
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('layouts/footer') %>

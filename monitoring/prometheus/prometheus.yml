@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  # Giám sát chính máy chủ Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Thu thập metrics trực tiếp từ Ứng dụng LMS Node.js
+  - job_name: 'lms-app'
+    metrics_path: '/metrics'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['lms-app:3000']
+        labels:
+          app: 'lms-online'
+          environment: 'production'
+
+  # Thu thập metrics phần cứng, CPU, RAM của toàn bộ Containers qua cAdvisor
+  - job_name: 'cadvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['cadvisor:8080']

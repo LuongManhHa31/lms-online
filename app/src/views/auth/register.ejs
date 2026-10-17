@@ -1,0 +1,62 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="text-center mb-4">
+          <div class="rounded-circle bg-success bg-opacity-10 text-success d-inline-flex p-3 mb-2">
+            <i class="bi bi-person-plus-fill fs-2"></i>
+          </div>
+          <h3 class="fw-bold text-dark">Đăng Ký Tài Khoản</h3>
+          <p class="text-muted small">Tạo tài khoản học viên để bắt đầu tham gia các khóa học</p>
+        </div>
+
+        <% if (error) { %>
+          <div class="alert alert-danger py-2 small d-flex align-items-center">
+            <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+            <div><%= error %></div>
+          </div>
+        <% } %>
+
+        <form action="/auth/register" method="POST">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Họ và tên học viên *</label>
+            <input type="text" name="full_name" class="form-control" placeholder="Ví dụ: Lê Văn Long" value="<%= values && values.full_name ? values.full_name : '' %>" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Tên đăng nhập *</label>
+            <input type="text" name="username" class="form-control" placeholder="Ví dụ: vanlong2026" value="<%= values && values.username ? values.username : '' %>" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Địa chỉ Email *</label>
+            <input type="email" name="email" class="form-control" placeholder="vanlong@example.com" value="<%= values && values.email ? values.email : '' %>" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Mật khẩu *</label>
+            <input type="password" name="password" class="form-control" placeholder="Tối thiểu 6 ký tự" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-semibold">Xác nhận mật khẩu *</label>
+            <input type="password" name="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu" required>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 py-2 fw-semibold mb-3">
+            Đăng Ký Học Viên
+          </button>
+        </form>
+
+        <div class="text-center">
+          <span class="text-muted small">Đã có tài khoản? </span>
+          <a href="/auth/login" class="small fw-semibold text-decoration-none">Đăng nhập ngay</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

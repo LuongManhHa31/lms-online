@@ -1,0 +1,228 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <!-- Tiêu đề Dashboard -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <span class="badge bg-danger mb-1"><i class="bi bi-shield-lock-fill me-1"></i> Admin Panel</span>
+      <h2 class="fw-bold text-dark mb-0">Bảng Điều Khiển Quản Trị LMS</h2>
+      <p class="text-muted small mb-0">Tổng quan hệ thống, người dùng và hoạt động khóa học</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/admin/courses/new" class="btn btn-primary btn-sm px-3 shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Thêm Khóa Học Mới
+      </a>
+      <a href="http://localhost:3001" target="_blank" class="btn btn-warning btn-sm px-3 text-dark fw-bold">
+        <i class="bi bi-graph-up me-1"></i> Grafana Metrics
+      </a>
+    </div>
+  </div>
+
+  <!-- Cảnh báo đơn đăng ký chờ duyệt -->
+  <% if (stats.pendingEnrollments > 0) { %>
+    <div class="alert alert-warning border-warning shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 p-3 rounded-3" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-bell-fill text-warning fs-4 me-3"></i>
+        <div>
+          <strong class="text-dark">Có <%= stats.pendingEnrollments %> đơn đăng ký khóa học đang chờ xét duyệt!</strong>
+          <div class="small text-muted">Học viên cần được bạn phê duyệt để có thể mở khóa các bài giảng.</div>
+        </div>
+      </div>
+      <a href="/admin/enrollments?status=pending" class="btn btn-warning fw-bold btn-sm px-3 shadow-sm text-dark">
+        <i class="bi bi-check2-circle me-1"></i> Xem & Phê Duyệt Ngay (<%= stats.pendingEnrollments %>)
+      </a>
+    </div>
+  <% } %>
+
+  <!-- Thẻ thống kê 6 chỉ số chính -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm p-3 bg-white text-center rounded-3">
+        <i class="bi bi-collection-play text-primary fs-3 mb-1"></i>
+        <h4 class="fw-bold mb-0 text-dark"><%= stats.totalCourses %></h4>
+        <small class="text-muted">Khóa học</small>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm p-3 bg-white text-center rounded-3">
+        <i class="bi bi-journal-richtext text-info fs-3 mb-1"></i>
+        <h4 class="fw-bold mb-0 text-dark"><%= stats.totalLessons %></h4>
+        <small class="text-muted">Bài học</small>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm p-3 bg-white text-center rounded-3">
+        <i class="bi bi-card-checklist text-success fs-3 mb-1"></i>
+        <h4 class="fw-bold mb-0 text-dark"><%= stats.totalEnrollments %></h4>
+        <small class="text-muted">Lượt đăng ký</small>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm p-3 bg-white text-center rounded-3 <%= stats.pendingEnrollments > 0 ? 'border-warning border-2' : '' %>">
+        <i class="bi bi-hourglass-split text-warning fs-3 mb-1"></i>
+        <h4 class="fw-bold mb-0 text-warning"><%= stats.pendingEnrollments %></h4>
+        <small class="text-muted fw-semibold">Chờ xác nhận</small>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm p-3 bg-white text-center rounded-3">
+        <i class="bi bi-person-video3 text-primary fs-3 mb-1"></i>
+        <h4 class="fw-bold mb-0 text-dark"><%= stats.totalStudents %></h4>
+        <small class="text-muted">Học viên</small>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card border-0 shadow-sm p-3 bg-white text-center rounded-3">
+        <i class="bi bi-shield-check text-danger fs-3 mb-1"></i>
+        <h4 class="fw-bold mb-0 text-dark"><%= stats.totalAdmins %></h4>
+        <small class="text-muted">Quản trị viên</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu truy cập nhanh các chức năng quản trị -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <a href="/admin/courses" class="card border-0 shadow-sm p-3 text-decoration-none bg-white hover-card rounded-3">
+        <div class="d-flex align-items-center">
+          <div class="rounded-3 bg-primary bg-opacity-10 p-3 text-primary me-3">
+            <i class="bi bi-folder2-open fs-3"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-dark mb-1">Quản Lý Khóa Học & Bài Học</h6>
+            <small class="text-muted">Thêm, sửa, xóa khóa học và cập nhật giáo trình bài học</small>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/admin/users" class="card border-0 shadow-sm p-3 text-decoration-none bg-white hover-card rounded-3">
+        <div class="d-flex align-items-center">
+          <div class="rounded-3 bg-danger bg-opacity-10 p-3 text-danger me-3">
+            <i class="bi bi-person-gear fs-3"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-dark mb-1">Phân Quyền Admin & Student</h6>
+            <small class="text-muted">Quản trị tài khoản, nâng quyền Admin hoặc chuyển thành Student</small>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/admin/enrollments" class="card border-0 shadow-sm p-3 text-decoration-none bg-white hover-card rounded-3 position-relative">
+        <div class="d-flex align-items-center">
+          <div class="rounded-3 bg-success bg-opacity-10 p-3 text-success me-3">
+            <i class="bi bi-card-checklist fs-3"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="fw-bold text-dark mb-1">Xác Nhận & Quản Lý Đăng Ký</h6>
+              <% if (stats.pendingEnrollments > 0) { %>
+                <span class="badge bg-danger"><%= stats.pendingEnrollments %> mới</span>
+              <% } %>
+            </div>
+            <small class="text-muted">Xét duyệt đơn đăng ký của học viên và phân quyền học</small>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Lượt đăng ký gần nhất -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history me-2 text-primary"></i> Đăng Ký Khóa Học Gần Đây</h5>
+      <a href="/admin/enrollments" class="small text-decoration-none fw-semibold">Quản lý tất cả (<%= stats.totalEnrollments %>) <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="small">#</th>
+            <th class="small">Học viên</th>
+            <th class="small">Tài khoản</th>
+            <th class="small">Khóa học đăng ký</th>
+            <th class="small">Thời gian</th>
+            <th class="small">Trạng thái</th>
+            <th class="small text-end">Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (recentEnrollments && recentEnrollments.length > 0) { %>
+            <% recentEnrollments.forEach((e, idx) => { %>
+              <tr class="<%= e.status === 'pending' ? 'table-warning table-opacity-10' : '' %>">
+                <td><%= idx + 1 %></td>
+                <td class="fw-semibold text-dark"><%= e.user_name %></td>
+                <td><code class="text-muted">@<%= e.username %></code></td>
+                <td><span class="badge bg-light text-primary border"><%= e.course_title %></span></td>
+                <td class="small text-muted"><%= new Date(e.enrolled_at).toLocaleString('vi-VN') %></td>
+                <td>
+                  <% if (e.status === 'pending') { %>
+                    <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> Chờ Xác Nhận</span>
+                  <% } else if (e.status === 'active') { %>
+                    <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle me-1"></i> Đang Học</span>
+                  <% } else if (e.status === 'rejected') { %>
+                    <span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-circle me-1"></i> Từ Chối</span>
+                  <% } else { %>
+                    <span class="badge bg-info-subtle text-info"><i class="bi bi-award me-1"></i> <%= e.status %></span>
+                  <% } %>
+                </td>
+                <td class="text-end">
+                  <% if (e.status === 'pending') { %>
+                    <form action="/admin/enrollments/<%= e.id %>/approve" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-success btn-sm py-0 px-2 fw-semibold">
+                        <i class="bi bi-check-lg me-1"></i> Duyệt
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <a href="/admin/enrollments?status=all" class="text-secondary small text-decoration-none">
+                      Chi tiết <i class="bi bi-arrow-right"></i>
+                    </a>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-3">Chưa có lượt đăng ký nào.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bảng điều khiển dịch vụ Docker & Giám sát -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-dark text-white">
+    <h5 class="fw-bold mb-3"><i class="bi bi-hdd-network me-2 text-warning"></i> Trạng Thái Dịch Vụ Docker & Giám Sát</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="p-3 bg-secondary bg-opacity-25 rounded-3">
+          <small class="text-muted d-block">Web Nginx Proxy</small>
+          <a href="http://localhost:80" target="_blank" class="text-white fw-bold text-decoration-none">Cổng 80 <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="p-3 bg-secondary bg-opacity-25 rounded-3">
+          <small class="text-muted d-block">phpMyAdmin (MySQL GUI)</small>
+          <a href="/phpmyadmin/" target="_blank" class="text-info fw-bold text-decoration-none">Cổng 8081 (/phpmyadmin/) <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="p-3 bg-secondary bg-opacity-25 rounded-3">
+          <small class="text-muted d-block">Grafana (Logs & Metrics)</small>
+          <a href="http://localhost:3001" target="_blank" class="text-warning fw-bold text-decoration-none">Cổng 3001 <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="p-3 bg-secondary bg-opacity-25 rounded-3">
+          <small class="text-muted d-block">Prometheus Engine</small>
+          <a href="http://localhost:9090" target="_blank" class="text-danger fw-bold text-decoration-none">Cổng 9090 <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

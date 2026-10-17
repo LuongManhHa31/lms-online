@@ -1,0 +1,99 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <span class="badge bg-danger mb-1"><i class="bi bi-shield-lock-fill me-1"></i> Quản Trị Khóa Học</span>
+      <h2 class="fw-bold text-dark mb-0">Danh Sách Khóa Học</h2>
+      <p class="text-muted small mb-0">Quản lý toàn bộ danh mục khóa học và bài học trong hệ thống LMS</p>
+    </div>
+    <a href="/admin/courses/new" class="btn btn-primary px-3 shadow-sm">
+      <i class="bi bi-plus-lg me-1"></i> Thêm Khóa Học Mới
+    </a>
+  </div>
+
+  <% if (success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i> <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 70px;">Ảnh</th>
+            <th>Tên khóa học</th>
+            <th>Danh mục</th>
+            <th>Giảng viên</th>
+            <th class="text-center">Số bài học</th>
+            <th class="text-center">Số học viên</th>
+            <th>Cấp độ</th>
+            <th class="text-end" style="min-width: 200px;">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (courses && courses.length > 0) { %>
+            <% courses.forEach(c => { %>
+              <tr>
+                <td>
+                  <img src="<%= c.thumbnail_url %>" class="rounded-3 shadow-sm" width="56" height="40" style="object-fit: cover;" alt="<%= c.title %>" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600'">
+                </td>
+                <td>
+                  <h6 class="mb-0 fw-bold text-dark">
+                    <a href="/courses/<%= c.id %>" target="_blank" class="text-dark text-decoration-none">
+                      <%= c.title %>
+                    </a>
+                  </h6>
+                  <small class="text-muted">ID: #<%= c.id %></small>
+                </td>
+                <td>
+                  <span class="badge bg-light text-primary border"><%= c.category_name || 'Khác' %></span>
+                </td>
+                <td class="small fw-semibold"><%= c.instructor %></td>
+                <td class="text-center">
+                  <span class="badge bg-primary-subtle text-primary fw-semibold"><%= c.lesson_count %> bài</span>
+                </td>
+                <td class="text-center">
+                  <span class="badge bg-success-subtle text-success fw-semibold"><%= c.student_count %> học viên</span>
+                </td>
+                <td>
+                  <span class="badge bg-secondary-subtle text-secondary small"><%= c.level %></span>
+                </td>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-1">
+                    <a href="/admin/courses/<%= c.id %>/lessons" class="btn btn-outline-primary btn-sm" title="Quản lý bài học">
+                      <i class="bi bi-collection-play me-1"></i> Bài học (<%= c.lesson_count %>)
+                    </a>
+                    <a href="/admin/courses/<%= c.id %>/edit" class="btn btn-outline-secondary btn-sm" title="Chỉnh sửa khóa học">
+                      <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <form action="/admin/courses/<%= c.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa khóa học này cùng toàn bộ bài học bên trong?');">
+                      <button type="submit" class="btn btn-outline-danger btn-sm" title="Xóa khóa học">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">Chưa có khóa học nào được khởi tạo.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

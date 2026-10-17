@@ -1,0 +1,256 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <!-- Tiêu đề trang & Nút hành động nhanh -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <span class="badge bg-danger mb-1"><i class="bi bi-shield-lock-fill me-1"></i> Quản Trị Đăng Ký</span>
+      <h2 class="fw-bold text-dark mb-0">Quản Lý & Xác Nhận Đăng Ký Khóa Học</h2>
+      <p class="text-muted small mb-0">Xét duyệt đơn đăng ký của học viên và theo dõi tiến độ các môn học</p>
+    </div>
+
+    <% if (counts.pending_count > 0) { %>
+      <div>
+        <form action="/admin/enrollments/approve-all" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn PHÊ DUYỆT TẤT CẢ <%= counts.pending_count %> đơn đăng ký đang chờ?');">
+          <button type="submit" class="btn btn-success fw-bold shadow-sm px-3">
+            <i class="bi bi-check2-all me-1"></i> Phê Duyệt Tất Cả Đơn Chờ (<%= counts.pending_count %>)
+          </button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Thông báo trạng thái -->
+  <% if (success) { %>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+      <i class="bi bi-check-circle-fill me-2 fs-5"></i> <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Thẻ Thống Kê 4 Cột -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <a href="/admin/enrollments?status=all" class="text-decoration-none">
+        <div class="card stat-card shadow-sm p-3 h-100 bg-white <%= selectedStatus === 'all' ? 'border-primary border-2' : '' %>" style="border-left-color: #2563eb;">
+          <div class="d-flex align-items-center">
+            <div class="rounded-3 bg-primary bg-opacity-10 p-3 text-primary me-3">
+              <i class="bi bi-collection-fill fs-3"></i>
+            </div>
+            <div>
+              <h3 class="fw-bold mb-0 text-dark"><%= counts.total_count %></h3>
+              <span class="text-muted small">Tổng Lượt Đăng Ký</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <a href="/admin/enrollments?status=pending" class="text-decoration-none">
+        <div class="card stat-card shadow-sm p-3 h-100 bg-white <%= selectedStatus === 'pending' ? 'border-warning border-2' : '' %>" style="border-left-color: #f59e0b;">
+          <div class="d-flex align-items-center">
+            <div class="rounded-3 bg-warning bg-opacity-10 p-3 text-warning me-3 position-relative">
+              <i class="bi bi-hourglass-split fs-3"></i>
+              <% if (counts.pending_count > 0) { %>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+              <% } %>
+            </div>
+            <div>
+              <h3 class="fw-bold mb-0 text-warning"><%= counts.pending_count %></h3>
+              <span class="text-muted small fw-semibold">Chờ Phê Duyệt</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <a href="/admin/enrollments?status=active" class="text-decoration-none">
+        <div class="card stat-card shadow-sm p-3 h-100 bg-white <%= selectedStatus === 'active' ? 'border-success border-2' : '' %>" style="border-left-color: #10b981;">
+          <div class="d-flex align-items-center">
+            <div class="rounded-3 bg-success bg-opacity-10 p-3 text-success me-3">
+              <i class="bi bi-check-circle-fill fs-3"></i>
+            </div>
+            <div>
+              <h3 class="fw-bold mb-0 text-success"><%= counts.active_count %></h3>
+              <span class="text-muted small">Đã Duyệt (Đang Học)</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <a href="/admin/enrollments?status=rejected" class="text-decoration-none">
+        <div class="card stat-card shadow-sm p-3 h-100 bg-white <%= selectedStatus === 'rejected' ? 'border-danger border-2' : '' %>" style="border-left-color: #ef4444;">
+          <div class="d-flex align-items-center">
+            <div class="rounded-3 bg-danger bg-opacity-10 p-3 text-danger me-3">
+              <i class="bi bi-x-circle-fill fs-3"></i>
+            </div>
+            <div>
+              <h3 class="fw-bold mb-0 text-danger"><%= counts.rejected_count %></h3>
+              <span class="text-muted small">Đã Từ Chối</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Thanh Tab Lọc Trạng Thái -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+    <div class="card-header bg-white border-bottom p-3">
+      <ul class="nav nav-pills gap-2">
+        <li class="nav-item">
+          <a class="nav-link <%= selectedStatus === 'all' ? 'active' : 'text-secondary' %> fw-semibold py-2 px-3" href="/admin/enrollments?status=all">
+            Tất Cả <span class="badge <%= selectedStatus === 'all' ? 'bg-light text-primary' : 'bg-secondary bg-opacity-10 text-secondary' %> ms-1"><%= counts.total_count %></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= selectedStatus === 'pending' ? 'active bg-warning text-dark' : 'text-secondary' %> fw-semibold py-2 px-3 position-relative" href="/admin/enrollments?status=pending">
+            <i class="bi bi-hourglass-split me-1"></i> Chờ Xác Nhận
+            <% if (counts.pending_count > 0) { %>
+              <span class="badge bg-danger ms-1"><%= counts.pending_count %></span>
+            <% } %>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= selectedStatus === 'active' ? 'active bg-success' : 'text-secondary' %> fw-semibold py-2 px-3" href="/admin/enrollments?status=active">
+            <i class="bi bi-check-circle me-1"></i> Đã Duyệt <span class="badge <%= selectedStatus === 'active' ? 'bg-light text-success' : 'bg-secondary bg-opacity-10 text-secondary' %> ms-1"><%= counts.active_count %></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= selectedStatus === 'completed' ? 'active bg-info' : 'text-secondary' %> fw-semibold py-2 px-3" href="/admin/enrollments?status=completed">
+            <i class="bi bi-award me-1"></i> Đã Hoàn Thành <span class="badge <%= selectedStatus === 'completed' ? 'bg-light text-info' : 'bg-secondary bg-opacity-10 text-secondary' %> ms-1"><%= counts.completed_count %></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= selectedStatus === 'rejected' ? 'active bg-danger' : 'text-secondary' %> fw-semibold py-2 px-3" href="/admin/enrollments?status=rejected">
+            <i class="bi bi-x-circle me-1"></i> Đã Từ Chối <span class="badge <%= selectedStatus === 'rejected' ? 'bg-light text-danger' : 'bg-secondary bg-opacity-10 text-secondary' %> ms-1"><%= counts.rejected_count %></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Bảng Danh Sách Đăng Ký -->
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 70px;">Mã ĐK</th>
+            <th>Học viên</th>
+            <th>Tài khoản & Email</th>
+            <th>Khóa học tham gia</th>
+            <th>Thời gian đăng ký</th>
+            <th>Trạng thái</th>
+            <th class="text-end" style="width: 220px;">Hành động & Phê duyệt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (enrollments && enrollments.length > 0) { %>
+            <% enrollments.forEach(e => { %>
+              <tr class="<%= e.status === 'pending' ? 'table-warning table-opacity-10' : '' %>">
+                <td>
+                  <span class="badge <%= e.status === 'pending' ? 'bg-warning text-dark' : 'bg-light text-dark border' %>">
+                    #<%= e.id %>
+                  </span>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="<%= e.user_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150' %>" class="rounded-circle" width="36" height="36" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-bold text-dark"><%= e.user_name %></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div><code>@<%= e.username %></code></div>
+                  <small class="text-muted"><%= e.user_email %></small>
+                </td>
+                <td>
+                  <a href="/courses/<%= e.course_id %>" target="_blank" class="text-decoration-none fw-semibold text-primary">
+                    <%= e.course_title %> <i class="bi bi-box-arrow-up-right small ms-1"></i>
+                  </a>
+                </td>
+                <td class="small text-muted">
+                  <%= new Date(e.enrolled_at).toLocaleString('vi-VN') %>
+                </td>
+                <td>
+                  <% if (e.status === 'pending') { %>
+                    <span class="badge bg-warning text-dark shadow-sm">
+                      <i class="bi bi-hourglass-split me-1"></i> Chờ Xác Nhận
+                    </span>
+                  <% } else if (e.status === 'active') { %>
+                    <span class="badge bg-success-subtle text-success">
+                      <i class="bi bi-check-circle-fill me-1"></i> Đã Duyệt (Đang Học)
+                    </span>
+                  <% } else if (e.status === 'completed') { %>
+                    <span class="badge bg-info-subtle text-info">
+                      <i class="bi bi-award-fill me-1"></i> Hoàn Thành
+                    </span>
+                  <% } else if (e.status === 'rejected') { %>
+                    <span class="badge bg-danger-subtle text-danger">
+                      <i class="bi bi-x-circle-fill me-1"></i> Bị Từ Chối
+                    </span>
+                  <% } else { %>
+                    <span class="badge bg-secondary-subtle text-secondary"><%= e.status %></span>
+                  <% } %>
+                </td>
+                <td class="text-end">
+                  <div class="d-flex justify-content-end align-items-center gap-1">
+                    <% if (e.status === 'pending') { %>
+                      <!-- Nút Duyệt / Xác Nhận Học Viên -->
+                      <form action="/admin/enrollments/<%= e.id %>/approve" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm px-2 fw-semibold shadow-sm" title="Xác nhận học viên vào học">
+                          <i class="bi bi-check-lg me-1"></i> Duyệt
+                        </button>
+                      </form>
+
+                      <!-- Nút Từ Chối -->
+                      <form action="/admin/enrollments/<%= e.id %>/reject" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn TỪ CHỐI đơn đăng ký này?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm px-2" title="Từ chối đơn đăng ký">
+                          <i class="bi bi-x-lg me-1"></i> Từ Chối
+                        </button>
+                      </form>
+                    <% } else if (e.status === 'rejected') { %>
+                      <!-- Duyệt lại đơn đã bị từ chối -->
+                      <form action="/admin/enrollments/<%= e.id %>/approve" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-outline-success btn-sm px-2" title="Phê duyệt lại">
+                          <i class="bi bi-arrow-clockwise me-1"></i> Duyệt Lại
+                        </button>
+                      </form>
+                    <% } %>
+
+                    <!-- Nút Xóa vĩnh viễn -->
+                    <form action="/admin/enrollments/<%= e.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn XÓA VĨNH VIỄN lượt đăng ký này?');">
+                      <button type="submit" class="btn btn-outline-secondary btn-sm px-2" title="Xóa bản ghi">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-5">
+                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                <h6 class="fw-bold">Không có lượt đăng ký nào trong mục này.</h6>
+                <p class="small text-muted mb-0">Các đơn đăng ký mới của học viên sẽ xuất hiện tại đây.</p>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

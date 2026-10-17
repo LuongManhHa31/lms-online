@@ -1,0 +1,19 @@
+{
+  "name": "lms-online-webapp",
+  "version": "1.0.0",
+  "description": "Hệ thống LMS Đơn giản - Đề 17 (Khóa học, Bài học, Đăng ký, Phân quyền Admin/Student)",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.9.7",
+    "prom-client": "^15.1.2"
+  }
+}

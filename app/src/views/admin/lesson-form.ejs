@@ -1,0 +1,57 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <span class="badge bg-primary mb-1">Khóa học: <%= course.title %></span>
+            <h3 class="fw-bold text-dark mb-1"><%= lesson ? 'Chỉnh Sửa Bài Học' : 'Thêm Bài Học Mới' %></h3>
+          </div>
+          <a href="/admin/courses/<%= course.id %>/lessons" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+          </a>
+        </div>
+
+        <form action="<%= action %>" method="POST">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Tiêu đề bài học *</label>
+            <input type="text" name="title" class="form-control" placeholder="Ví dụ: Bài 1 - Giới thiệu kiến trúc Docker" value="<%= lesson ? lesson.title : '' %>" required>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Số thứ tự bài học *</label>
+              <input type="number" name="order_num" class="form-control" value="<%= lesson ? lesson.order_num : 1 %>" min="1" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Thời lượng ước tính (Phút) *</label>
+              <input type="number" name="duration_minutes" class="form-control" value="<%= lesson ? lesson.duration_minutes : 20 %>" min="1" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Link Video Nhúng (YouTube Embed URL)</label>
+            <input type="url" name="video_url" class="form-control" placeholder="https://www.youtube.com/embed/VIDEO_ID" value="<%= lesson ? (lesson.video_url || '') : '' %>">
+            <small class="text-muted">Định dạng URL nhúng chuẩn: <code>https://www.youtube.com/embed/TlB_eWDSMt4</code></small>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-semibold">Nội dung chi tiết bài học (Hỗ trợ HTML/Văn bản) *</label>
+            <textarea name="content" class="form-control font-monospace" rows="10" placeholder="<h3>Mục tiêu</h3><p>Nội dung chi tiết bài giảng, hướng dẫn và bài tập...</p>" required><%= lesson ? lesson.content : '' %></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/admin/courses/<%= course.id %>/lessons" class="btn btn-light px-4">Hủy</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold">
+              <i class="bi bi-save me-1"></i> <%= lesson ? 'Lưu Thay Đổi' : 'Tạo Bài Học' %>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>
